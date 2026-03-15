@@ -34,6 +34,11 @@ export type JournalAiDraftResponsePayload = {
   draft: JournalHwpPayload;
 };
 
+export type JournalAiStatusPayload = {
+  openAiConfigured: boolean;
+  model: string;
+};
+
 const DEFAULT_API_BASE_URL = "http://localhost:8081";
 
 function getApiBaseUrl(): string {
@@ -61,6 +66,16 @@ export async function requestJournalAiDraft(
   }
 
   return (await response.json()) as JournalAiDraftResponsePayload;
+}
+
+export async function requestJournalAiStatus(): Promise<JournalAiStatusPayload> {
+  const response = await fetch(`${getApiBaseUrl()}/api/v1/documents/journal/ai-status`);
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  return (await response.json()) as JournalAiStatusPayload;
 }
 
 export async function requestJournalHwp(payload: JournalHwpPayload): Promise<Blob> {

@@ -9,6 +9,7 @@ import {
   type JournalHwpPayload,
   getJournalApiBaseUrlLabel,
   requestJournalAiDraft,
+  requestJournalAiStatus,
   requestJournalHwp
 } from "../../../lib/journal-document-api";
 import {
@@ -372,6 +373,7 @@ export default function JournalMinutesPage() {
   const [assistantBusy, setAssistantBusy] = useState(false);
   const [assistantPrompt, setAssistantPrompt] = useState("");
   const [assistantMode, setAssistantMode] = useState<"openai" | "fallback">("fallback");
+  const [assistantModel, setAssistantModel] = useState("gpt-4.1-mini");
   const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([
     {
       id: Date.now(),
@@ -394,6 +396,28 @@ export default function JournalMinutesPage() {
       editorRef.current.innerHTML = form.body;
     }
   }, [form.body, selectedId]);
+
+  useEffect(() => {
+    const loadAiStatus = async () => {
+      try {
+        const status = await requestJournalAiStatus();
+        setAssistantModel(status.model || "gpt-4.1-mini");
+        if (status.openAiConfigured) {
+          setAssistantMode("openai");
+          setStatusMessage(`문서 API 연결 완료 · OpenAI 활성화 (${status.model})`);
+        } else {
+          setAssistantMode("fallback");
+          setStatusMessage("문서 API 연결 완료 · OpenAI 키 미설정(현재 fallback 모드)");
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "AI 상태 확인 실패";
+        setAssistantMode("fallback");
+        setStatusMessage(`문서 API 연결 확인 실패: ${message}`);
+      }
+    };
+
+    void loadAiStatus();
+  }, []);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -751,7 +775,7 @@ export default function JournalMinutesPage() {
       <DocumentAiPanel
         open={assistantOpen}
         busy={assistantBusy}
-        modeLabel={assistantMode === "openai" ? "OpenAI" : "규칙 모드"}
+        modeLabel={assistantMode === "openai" ? `OpenAI (${assistantModel})` : "규칙 모드"}
         input={assistantPrompt}
         messages={assistantMessages}
         quickPrompts={journalAssistantPrompts}

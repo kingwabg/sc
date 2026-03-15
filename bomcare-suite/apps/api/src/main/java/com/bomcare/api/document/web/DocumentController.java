@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bomcare.api.document.dto.DocumentCenterResponse;
 import com.bomcare.api.document.dto.JournalAiDraftRequest;
 import com.bomcare.api.document.dto.JournalAiDraftResponse;
+import com.bomcare.api.document.dto.JournalAiStatusResponse;
 import com.bomcare.api.document.dto.JournalHwpRequest;
 import com.bomcare.api.document.service.JournalAiDraftService;
 import com.bomcare.api.document.service.JournalDocumentService;
@@ -56,6 +57,16 @@ public class DocumentController {
     @PostMapping("/journal/ai-draft")
     public ResponseEntity<JournalAiDraftResponse> createJournalDraft(@Valid @RequestBody JournalAiDraftRequest request) {
         return ResponseEntity.ok(journalAiDraftService.createDraft(request));
+    }
+
+    @GetMapping("/journal/ai-status")
+    public ResponseEntity<JournalAiStatusResponse> journalAiStatus() {
+        return ResponseEntity.ok(
+                new JournalAiStatusResponse(
+                        journalAiDraftService.isOpenAiConfigured(),
+                        journalAiDraftService.modelName()
+                )
+        );
     }
 
     @PostMapping(value = "/journal/hwp", produces = "application/x-hwp")

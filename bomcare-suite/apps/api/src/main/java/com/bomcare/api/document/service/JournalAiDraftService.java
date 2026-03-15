@@ -78,7 +78,7 @@ public class JournalAiDraftService {
     }
 
     public JournalAiDraftResponse createDraft(JournalAiDraftRequest request) {
-        if (!StringUtils.hasText(apiKey)) {
+        if (!isOpenAiConfigured()) {
             return fallbackResponse(request);
         }
 
@@ -87,6 +87,14 @@ public class JournalAiDraftService {
         } catch (Exception exception) {
             return fallbackResponse(request);
         }
+    }
+
+    public boolean isOpenAiConfigured() {
+        return StringUtils.hasText(apiKey);
+    }
+
+    public String modelName() {
+        return model;
     }
 
     private JournalAiDraftResponse openAiResponse(JournalAiDraftRequest request) throws IOException, InterruptedException {
