@@ -16,11 +16,14 @@ import org.springframework.util.StringUtils;
 import com.bomcare.api.document.dto.JournalAiDraftRequest;
 import com.bomcare.api.document.dto.JournalAiDraftResponse;
 import com.bomcare.api.document.dto.JournalHwpRequest;
+
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class JournalAiDraftService {
+    private static final List<String> DEFAULT_HEADERS = List.of("시간", "구분", "내용", "담당자");
+
     private static final String RESPONSE_SCHEMA = """
             {
               "type": "object",
@@ -29,10 +32,7 @@ public class JournalAiDraftService {
               "properties": {
                 "reply": { "type": "string" },
                 "title": { "type": "string" },
-                "highlights": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
+                "highlights": { "type": "array", "items": { "type": "string" } },
                 "sections": {
                   "type": "array",
                   "items": {
@@ -45,20 +45,29 @@ public class JournalAiDraftService {
                     }
                   }
                 },
-                "tableHeaders": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
+                "tableHeaders": { "type": "array", "items": { "type": "string" } },
                 "tableRows": {
                   "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": { "type": "string" }
-                  }
+                  "items": { "type": "array", "items": { "type": "string" } }
                 },
                 "notes": { "type": "string" }
               }
             }
+            """;
+
+    private static final String SYSTEM_PROMPT = """
+            당신은 아동 사회복지시설 운영일지/회의록을 작성하는 문서 보조 AI입니다.
+            출력은 반드시 한국어 JSON 스키마만 반환하세요.
+            작성 규칙:
+            1) 행정 문체로 간결하게 작성하고 과장 표현을 금지합니다.
+            2) title은 실제 문서 제목 형태로 작성합니다.
+            3) highlights는 3~6개 키워드로 작성합니다.
+            4) sections는 최소 3개 이상 작성합니다.
+               - 권장: 진행 개요, 아동 지원 내용, 특이사항/후속조치
+            5) tableHeaders는 기본 4열(시간, 구분, 내용, 담당자)을 우선 사용합니다.
+            6) tableRows는 최소 3행 이상 작성합니다.
+            7) notes에는 보관/결재/개인정보 주의사항 등 운영 메모를 1~2문장 작성합니다.
+            8) 입력에 없는 인명, 기관명, 수치, 민감정보를 임의 생성하지 않습니다.
             """;
 
     private final ObjectMapper objectMapper;
@@ -106,13 +115,14 @@ public class JournalAiDraftService {
 
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
-            throw new IllegalStateException("OpenAI 호출 실패: " + response.statusCode());
+            throw new IllegalStateException("OpenAI response failed: " + response.statusCode());
         }
 
         JsonNode root = objectMapper.readTree(response.body());
         String outputText = extractOutputText(root);
         DraftPayload payload = objectMapper.readValue(outputText, DraftPayload.class);
-        return new JournalAiDraftResponse(payload.reply(), "openai", toJournalRequest(request, payload));
+        JournalHwpRequest draft = normalizeJournalRequest(request, payload);
+        return new JournalAiDraftResponse(payload.reply(), "openai", draft);
     }
 
     private Map<String, Object> buildRequestBody(JournalAiDraftRequest request) throws IOException {
@@ -126,18 +136,12 @@ public class JournalAiDraftService {
 
         Map<String, Object> systemMessage = Map.of(
                 "role", "system",
-                "content", List.of(Map.of(
-                        "type", "input_text",
-                        "text", "You generate Korean child-welfare facility operation journal drafts. Keep the tone administrative and concise. Return only the requested schema."
-                ))
+                "content", List.of(Map.of("type", "input_text", "text", SYSTEM_PROMPT))
         );
 
         Map<String, Object> userMessage = Map.of(
                 "role", "user",
-                "content", List.of(Map.of(
-                        "type", "input_text",
-                        "text", objectMapper.writeValueAsString(request)
-                ))
+                "content", List.of(Map.of("type", "input_text", "text", buildUserPrompt(request)))
         );
 
         Map<String, Object> body = new LinkedHashMap<>();
@@ -145,6 +149,23 @@ public class JournalAiDraftService {
         body.put("input", List.of(systemMessage, userMessage));
         body.put("text", text);
         return body;
+    }
+
+    private String buildUserPrompt(JournalAiDraftRequest request) throws IOException {
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put("author", request.author());
+        context.put("facilityName", request.facilityName());
+        context.put("journalDate", request.journalDate());
+        context.put("startTime", blankToDefault(request.startTime(), "09:00"));
+        context.put("endTime", blankToDefault(request.endTime(), "18:00"));
+        context.put("programName", blankToDefault(request.programName(), "프로그램 미지정"));
+        context.put("recordType", blankToDefault(request.recordType(), "운영일지(아동)"));
+        context.put("target", blankToDefault(request.target(), "대상자 미지정"));
+        context.put("tags", blankToDefault(request.tags(), "일상"));
+        context.put("prompt", request.prompt());
+        context.put("currentBody", blankToDefault(request.currentBody(), "(본문 없음)"));
+
+        return "아래 입력값을 기반으로 운영 문서를 작성하세요.\n" + objectMapper.writeValueAsString(context);
     }
 
     private String extractOutputText(JsonNode root) {
@@ -155,7 +176,7 @@ public class JournalAiDraftService {
 
         JsonNode outputs = root.get("output");
         if (outputs == null || !outputs.isArray()) {
-            throw new IllegalStateException("OpenAI 응답에 output_text가 없습니다.");
+            throw new IllegalStateException("OpenAI response does not include output_text.");
         }
 
         StringBuilder builder = new StringBuilder();
@@ -174,19 +195,19 @@ public class JournalAiDraftService {
         }
 
         if (!StringUtils.hasText(builder.toString())) {
-            throw new IllegalStateException("OpenAI 응답에서 텍스트를 추출하지 못했습니다.");
+            throw new IllegalStateException("No usable text found in OpenAI response.");
         }
 
         return builder.toString();
     }
 
     private JournalAiDraftResponse fallbackResponse(JournalAiDraftRequest request) {
-        String title = StringUtils.hasText(request.programName())
+        String safeTitle = StringUtils.hasText(request.programName())
                 ? request.programName().trim() + " 운영일지"
                 : "아동 운영일지";
 
         JournalHwpRequest draft = new JournalHwpRequest(
-                title,
+                safeTitle,
                 request.author(),
                 request.facilityName(),
                 request.journalDate(),
@@ -194,25 +215,25 @@ public class JournalAiDraftService {
                 request.endTime(),
                 request.programName(),
                 List.of(
-                        request.facilityName() + " 운영 내용을 기준으로 초안을 만들었습니다.",
-                        "프롬프트 반영: " + request.prompt().trim()
+                        request.facilityName() + " 운영 기본 템플릿 기반 초안입니다.",
+                        "요청 반영: " + request.prompt().trim()
                 ),
                 List.of(
                         new JournalHwpRequest.JournalSection("진행 개요", request.prompt().trim()),
-                        new JournalHwpRequest.JournalSection("아동 지원 내용", "프로그램 운영, 생활지도, 상담 내용을 행정 문서 톤으로 정리합니다."),
-                        new JournalHwpRequest.JournalSection("특이 사항", "안전, 건강, 출결과 관련한 변동 사항을 확인합니다.")
+                        new JournalHwpRequest.JournalSection("아동 지원 내용", "프로그램 운영, 생활지도, 상담 내용을 행정 형식으로 정리합니다."),
+                        new JournalHwpRequest.JournalSection("특이 사항", "안전, 건강, 출결 관련 변경 사항을 확인합니다.")
                 ),
-                List.of("시간", "구분", "내용", "담당자"),
+                DEFAULT_HEADERS,
                 List.of(
                         List.of(safeTime(request), "운영 준비", "일정과 환경 점검을 진행했습니다.", request.author()),
-                        List.of(safeTime(request), "프로그램", "아동 활동 및 관찰 내용을 기록합니다.", request.author()),
-                        List.of(safeTime(request), "마감", "보호자 공유 및 내부 기록을 정리합니다.", request.author())
+                        List.of(safeTime(request), "프로그램", "아동 참여와 관찰 내용을 기록했습니다.", request.author()),
+                        List.of(safeTime(request), "마감", "보호자 공유 및 내부 기록을 정리했습니다.", request.author())
                 ),
-                "AI 키가 없어서 규칙 기반 초안을 반환했습니다."
+                "AI 키 미설정으로 규칙 기반 초안을 반환했습니다."
         );
 
         return new JournalAiDraftResponse(
-                "운영일지 초안을 만들었습니다. 시설명, 날짜, 담당자와 함께 HWP 생성 API로 바로 넘길 수 있습니다.",
+                "운영일지 초안을 만들었습니다. 검토 후 바로 HWP 생성 API로 저장할 수 있습니다.",
                 "fallback",
                 draft
         );
@@ -225,25 +246,121 @@ public class JournalAiDraftService {
         return "09:00 ~ 18:00";
     }
 
-    private JournalHwpRequest toJournalRequest(JournalAiDraftRequest request, DraftPayload payload) {
-        List<JournalHwpRequest.JournalSection> sections = payload.sections().stream()
-                .map(section -> new JournalHwpRequest.JournalSection(section.heading(), section.content()))
-                .toList();
+    private JournalHwpRequest normalizeJournalRequest(JournalAiDraftRequest request, DraftPayload payload) {
+        List<JournalHwpRequest.JournalSection> sections = normalizeSections(payload.sections());
+        List<String> headers = normalizeHeaders(payload.tableHeaders());
+        List<List<String>> rows = normalizeRows(payload.tableRows(), headers, request.author());
+        List<String> highlights = normalizeHighlights(payload.highlights());
+        String title = blankToDefault(payload.title(), defaultTitle(request));
+        String notes = blankToDefault(payload.notes(), "기안 검토 후 결재 라인에 상신하세요.");
 
         return new JournalHwpRequest(
-                payload.title(),
+                title,
                 request.author(),
                 request.facilityName(),
                 request.journalDate(),
                 request.startTime(),
                 request.endTime(),
                 request.programName(),
-                payload.highlights(),
+                highlights,
                 sections,
-                payload.tableHeaders(),
-                payload.tableRows(),
-                payload.notes()
+                headers,
+                rows,
+                notes
         );
+    }
+
+    private List<String> normalizeHighlights(List<String> highlights) {
+        List<String> items = highlights == null ? List.of() : highlights.stream()
+                .map(this::trimToNull)
+                .filter(StringUtils::hasText)
+                .limit(6)
+                .toList();
+        return items.isEmpty() ? List.of("운영일지", "아동지원", "일상기록") : items;
+    }
+
+    private List<JournalHwpRequest.JournalSection> normalizeSections(List<DraftSection> sections) {
+        List<JournalHwpRequest.JournalSection> mapped = sections == null ? List.of() : sections.stream()
+                .map(section -> new JournalHwpRequest.JournalSection(
+                        blankToDefault(section.heading(), "기록 내용"),
+                        blankToDefault(section.content(), "세부 내용을 작성하세요.")
+                ))
+                .limit(6)
+                .toList();
+
+        if (mapped.size() >= 3) {
+            return mapped;
+        }
+
+        return List.of(
+                new JournalHwpRequest.JournalSection("진행 개요", "당일 운영 흐름과 주요 활동을 요약합니다."),
+                new JournalHwpRequest.JournalSection("아동 지원 내용", "참여, 관찰, 상담 및 보호 조치를 기록합니다."),
+                new JournalHwpRequest.JournalSection("특이 사항 및 후속조치", "안전/건강/출결 이슈와 후속 계획을 정리합니다.")
+        );
+    }
+
+    private List<String> normalizeHeaders(List<String> headers) {
+        List<String> normalized = headers == null ? List.of() : headers.stream()
+                .map(this::trimToNull)
+                .filter(StringUtils::hasText)
+                .limit(4)
+                .toList();
+
+        return normalized.size() >= 3 ? normalized : DEFAULT_HEADERS;
+    }
+
+    private List<List<String>> normalizeRows(List<List<String>> rows, List<String> headers, String author) {
+        int width = Math.max(3, headers.size());
+        List<List<String>> normalized = rows == null ? List.of() : rows.stream()
+                .map(row -> normalizeRow(row, width))
+                .filter(row -> !row.isEmpty())
+                .limit(10)
+                .toList();
+
+        if (normalized.size() >= 3) {
+            return normalized;
+        }
+
+        return List.of(
+                normalizeRow(List.of("09:00 ~ 10:00", "운영 준비", "출결 및 환경 점검", blankToDefault(author, "담당자")), width),
+                normalizeRow(List.of("10:00 ~ 16:00", "프로그램", "활동 진행 및 관찰 기록", blankToDefault(author, "담당자")), width),
+                normalizeRow(List.of("16:00 ~ 18:00", "마감", "보호자 공유 및 내부 보고 정리", blankToDefault(author, "담당자")), width)
+        );
+    }
+
+    private List<String> normalizeRow(List<String> row, int width) {
+        if (row == null || row.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> cleaned = row.stream()
+                .map(cell -> blankToDefault(cell, "-"))
+                .limit(width)
+                .toList();
+
+        if (cleaned.size() == width) {
+            return cleaned;
+        }
+
+        LinkedHashMap<Integer, String> padded = new LinkedHashMap<>();
+        for (int i = 0; i < width; i++) {
+            padded.put(i, i < cleaned.size() ? cleaned.get(i) : "-");
+        }
+        return padded.values().stream().toList();
+    }
+
+    private String defaultTitle(JournalAiDraftRequest request) {
+        String program = trimToNull(request.programName());
+        return StringUtils.hasText(program) ? program + " 운영일지" : "아동 운영일지";
+    }
+
+    private String blankToDefault(String value, String defaultValue) {
+        String normalized = trimToNull(value);
+        return StringUtils.hasText(normalized) ? normalized : defaultValue;
+    }
+
+    private String trimToNull(String value) {
+        return value == null ? null : value.trim();
     }
 
     private record DraftPayload(

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.bomcare.api.document.dto.JournalAiDraftRequest;
 import com.bomcare.api.document.dto.JournalAiDraftResponse;
+
 import tools.jackson.databind.ObjectMapper;
 
 class JournalAiDraftServiceTest {
@@ -18,11 +19,15 @@ class JournalAiDraftServiceTest {
         JournalAiDraftResponse response = service.createDraft(new JournalAiDraftRequest(
                 "오늘 운영일지 초안 만들어줘",
                 "최하은",
-                "새봄 아동센터",
+                "늘봄 아동센터",
                 "2026-03-16",
                 "09:00",
                 "18:00",
-                "생활지원"
+                "생활지도",
+                "운영일지(아동)",
+                "아동 전체",
+                "일상, 상담",
+                "기존 본문 요약"
         ));
 
         assertEquals("fallback", response.mode());

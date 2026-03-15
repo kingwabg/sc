@@ -566,7 +566,11 @@ export default function JournalMinutesPage() {
         journalDate: form.workDate,
         startTime: form.startTime,
         endTime: form.endTime,
-        programName: form.program
+        programName: form.program,
+        recordType: form.recordType,
+        target: form.target,
+        tags: form.tags,
+        currentBody: stripHtml(body).slice(0, 2000)
       });
 
       applyAiDraft(response);

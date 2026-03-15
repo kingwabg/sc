@@ -26,6 +26,10 @@ export type JournalAiDraftRequestPayload = {
   startTime?: string;
   endTime?: string;
   programName?: string;
+  recordType?: string;
+  target?: string;
+  tags?: string;
+  currentBody?: string;
 };
 
 export type JournalAiDraftResponsePayload = {

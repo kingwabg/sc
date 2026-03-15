@@ -9,6 +9,10 @@ public record JournalAiDraftRequest(
         @NotBlank String journalDate,
         String startTime,
         String endTime,
-        String programName
+        String programName,
+        String recordType,
+        String target,
+        String tags,
+        String currentBody
 ) {
 }
