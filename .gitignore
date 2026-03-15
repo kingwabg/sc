@@ -1,0 +1,17 @@
+.m2/
+_analysis/
+JoinWorkGW/
+tools/
+
+bomcare-suite/apps/web/node_modules/
+bomcare-suite/apps/web/.next/
+bomcare-suite/apps/web/.env.local
+bomcare-suite/apps/web/*.log
+bomcare-suite/apps/web/*.out.log
+bomcare-suite/apps/web/*.err.log
+bomcare-suite/apps/web/tsconfig.tsbuildinfo
+
+bomcare-suite/apps/api/target/
+bomcare-suite/apps/api/*.log
+bomcare-suite/apps/api/*.out.log
+bomcare-suite/apps/api/*.err.log
