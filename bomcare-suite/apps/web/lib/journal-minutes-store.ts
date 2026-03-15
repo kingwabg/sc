@@ -1,4 +1,5 @@
 export type JournalType = "운영일지(아동)" | "회의록";
+export type ApprovalStatus = "draft" | "pending" | "approved" | "rejected";
 
 export type JournalMinutesEntry = {
   id: number;
@@ -14,6 +15,8 @@ export type JournalMinutesEntry = {
   endTime: string;
   tags: string;
   body: string;
+  approvalLine: string[];
+  approvalStatus: ApprovalStatus;
   hwpFileName: string;
   createdAt: string;
 };
@@ -23,7 +26,7 @@ const STORAGE_KEY = "bomcare:journal-minutes:v1";
 const seedRows: JournalMinutesEntry[] = [
   {
     id: 2026031201,
-    facilityName: "새봄 아동센터",
+    facilityName: "늘봄 아동센터",
     workDate: "2026-03-12",
     title: "3월 12일 목 운영일지",
     manager: "최하은",
@@ -34,7 +37,9 @@ const seedRows: JournalMinutesEntry[] = [
     startTime: "09:00",
     endTime: "18:00",
     tags: "일상, 상담",
-    body: "오전 학습지원과 생활실 점검을 진행했고, 오후에는 개인상담 2건과 보호자 통화를 수행했습니다.",
+    body: "<p>사전 학습지도와 생활지원 점검을 진행했고, 오후에는 개인상담 2건과 보호자 통화를 수행했습니다.</p>",
+    approvalLine: ["담당자", "팀장", "센터장"],
+    approvalStatus: "draft",
     hwpFileName: "운영일지_2026-03-12_최하은.hwp",
     createdAt: "2026-03-12 18:10:00"
   }
@@ -44,13 +49,13 @@ function parseRows(raw: string | null): JournalMinutesEntry[] {
   if (!raw) return seedRows;
   try {
     const parsed = JSON.parse(raw) as JournalMinutesEntry[];
-    if (!Array.isArray(parsed)) {
-      return seedRows;
-    }
+    if (!Array.isArray(parsed)) return seedRows;
 
     return parsed.map((row) => ({
       ...row,
-      facilityName: row.facilityName ?? "새봄 아동센터"
+      facilityName: row.facilityName ?? "늘봄 아동센터",
+      approvalLine: Array.isArray(row.approvalLine) && row.approvalLine.length > 0 ? row.approvalLine : ["담당자", "팀장", "센터장"],
+      approvalStatus: row.approvalStatus ?? "draft"
     }));
   } catch {
     return seedRows;
@@ -78,6 +83,8 @@ export function upsertJournalMinutes(
   const id = payload.id ?? Date.now();
   const nextRow: JournalMinutesEntry = {
     ...payload,
+    approvalLine: payload.approvalLine.length > 0 ? payload.approvalLine : ["담당자", "팀장", "센터장"],
+    approvalStatus: payload.approvalStatus ?? "draft",
     id,
     createdAt: nowLabel()
   };
