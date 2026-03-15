@@ -135,8 +135,9 @@
 }
 
 .card {
+  position: relative;
   padding: 28px;
-  background: rgba(255, 252, 247, 0.88);
+  background: rgba(255, 252, 247, 0.92);
   backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
@@ -144,9 +145,19 @@
   gap: 22px;
 }
 
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  border-radius: 30px 30px 0 0;
+  background: linear-gradient(90deg, #2f7f7a, #c49b45, #d97852);
+}
+
 .cardHeader {
   display: grid;
   gap: 10px;
+  padding-bottom: 4px;
 }
 
 .cardTitle {
@@ -164,6 +175,25 @@
   line-height: 1.7;
 }
 
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 44, 44, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  color: #546261;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .demoBox {
   display: grid;
   gap: 12px;
@@ -173,12 +203,23 @@
   border: 1px solid rgba(31, 44, 44, 0.08);
 }
 
+.demoHeader {
+  display: grid;
+  gap: 4px;
+}
+
 .demoTitle {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #735826;
+}
+
+.demoCaption {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #62706f;
 }
 
 .demoItem {
@@ -204,6 +245,7 @@
 .form {
   display: grid;
   gap: 14px;
+  padding-top: 4px;
 }
 
 .field {
@@ -256,6 +298,11 @@
   cursor: pointer;
   box-shadow: 0 14px 30px rgba(29, 95, 127, 0.22);
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.submit:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(47, 127, 122, 0.14), 0 14px 30px rgba(29, 95, 127, 0.22);
 }
 
 .submit:hover {

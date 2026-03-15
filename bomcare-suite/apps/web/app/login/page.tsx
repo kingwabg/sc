@@ -58,10 +58,9 @@ export default function LoginPage() {
           </div>
 
           <div className={styles.noteBox}>
-            <strong className={styles.noteTitle}>로그인 화면 개선 방향</strong>
+            <strong className={styles.noteTitle}>운영 접속 가이드</strong>
             <p className={styles.noteText}>
-              소개용 문구와 실제 접속 행동을 분리해서, 첫 화면은 신뢰감 있게 보이고 입력 흐름은 더 빠르게
-              처리되도록 정리했습니다.
+              소개 영역은 서비스 성격을 보여주고, 로그인 카드는 빠른 접속 행동에만 집중하도록 분리했습니다.
             </p>
           </div>
         </section>
@@ -71,10 +70,17 @@ export default function LoginPage() {
             <p className={styles.eyebrow}>Login</p>
             <h2 className={styles.cardTitle}>운영 시스템 접속</h2>
             <p className={styles.helper}>아이디와 비밀번호를 입력하면 권한에 맞는 메뉴가 자동으로 구성됩니다.</p>
+            <div className={styles.metaRow}>
+              <span className={styles.metaChip}>권한 기반 접속</span>
+              <span className={styles.metaChip}>데모 계정 지원</span>
+            </div>
           </header>
 
           <div className={styles.demoBox}>
-            <strong className={styles.demoTitle}>데모 계정</strong>
+            <div className={styles.demoHeader}>
+              <strong className={styles.demoTitle}>테스트 계정</strong>
+              <span className={styles.demoCaption}>현재는 검증용 샘플 계정이 포함되어 있습니다.</span>
+            </div>
             {demoAccounts.map((account) => (
               <div key={account.label} className={styles.demoItem}>
                 <span className={styles.demoKey}>{account.label}</span>
@@ -114,7 +120,7 @@ export default function LoginPage() {
           </form>
 
           <p className={styles.footerNote}>
-            현재는 데모용 계정 예시가 노출되어 있으며, 추후 실서비스 단계에서는 보안 정책에 맞게 별도 처리할 수
+            운영 계정 정책, 비밀번호 재설정, 2차 인증 등은 추후 실서비스 보안 기준에 맞춰 단계적으로 연결할 수
             있습니다.
           </p>
         </article>
