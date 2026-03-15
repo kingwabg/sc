@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  padding: 32px;
+  padding: 40px 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,10 +11,10 @@
 }
 
 .shell {
-  width: min(1180px, 100%);
+  width: min(1220px, 100%);
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(380px, 440px);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(380px, 420px);
+  gap: 20px;
   align-items: stretch;
 }
 
@@ -31,7 +31,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 28px;
+  gap: 24px;
 }
 
 .eyebrow {
@@ -51,9 +51,11 @@
 
 .heroTitle {
   margin: 16px 0 12px;
-  font-size: clamp(34px, 5vw, 64px);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
+  max-width: 10.5ch;
+  font-size: clamp(34px, 4.5vw, 58px);
+  line-height: 1.03;
+  letter-spacing: -0.045em;
+  word-break: keep-all;
   color: #1f2c2c;
 }
 
@@ -67,19 +69,19 @@
 
 .heroText {
   margin: 0;
-  max-width: 62ch;
-  font-size: 17px;
-  line-height: 1.75;
+  max-width: 54ch;
+  font-size: 16px;
+  line-height: 1.8;
 }
 
 .featureGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .featureCard {
-  padding: 18px;
+  padding: 18px 16px;
   border-radius: 22px;
   border: 1px solid rgba(31, 44, 44, 0.08);
   background: rgba(255, 255, 255, 0.68);
@@ -96,7 +98,7 @@
 }
 
 .featureValue {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.04em;
   color: #1f2c2c;
@@ -105,7 +107,8 @@
 .featureText {
   margin: 10px 0 0;
   color: #62706f;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-size: 15px;
 }
 
 .noteBox {
@@ -115,6 +118,7 @@
   border-radius: 22px;
   background: rgba(47, 127, 122, 0.08);
   border: 1px solid rgba(47, 127, 122, 0.14);
+  max-width: 56ch;
 }
 
 .noteTitle {
@@ -136,25 +140,28 @@
   backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  justify-content: center;
+  gap: 22px;
 }
 
 .cardHeader {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .cardTitle {
   margin: 0;
-  font-size: 32px;
+  font-size: 34px;
   line-height: 1.05;
   letter-spacing: -0.04em;
+  word-break: keep-all;
   color: #1f2c2c;
 }
 
 .helper {
   margin: 0;
-  line-height: 1.65;
+  max-width: 34ch;
+  line-height: 1.7;
 }
 
 .demoBox {
@@ -177,8 +184,9 @@
 .demoItem {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 14px;
   background: rgba(244, 239, 229, 0.78);
 }
@@ -190,11 +198,12 @@
 
 .demoValue {
   font-weight: 700;
+  text-align: right;
 }
 
 .form {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .field {
@@ -215,6 +224,7 @@
   background: rgba(255, 255, 255, 0.95);
   color: #1f2c2c;
   font-size: 15px;
+  font-weight: 600;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
@@ -260,7 +270,7 @@
 .footerNote {
   margin: 0;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #62706f;
 }
 
