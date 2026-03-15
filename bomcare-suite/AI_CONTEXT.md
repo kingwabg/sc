@@ -91,3 +91,16 @@ git pull --ff-only origin main
   - `npm run build` 통과
 - Handoff note:
   - 토글 UX는 hover/pin 혼합 구조라 추가 단순화 필요
+
+### 2026-03-16 05:00 (KST) - OpenClaw main / DESKTOP-PPGTQQM
+- Status: done
+- Task: sidebar hover trigger 범위 수정
+- Target files:
+  - `apps/web/components/shell.tsx`
+- Changed files:
+  - `apps/web/components/shell.tsx`
+- Result:
+  - hover 이벤트 범위를 전체 shell이 아닌 sidebar(`aside`)로 제한
+  - 메인 콘텐츠 영역 위의 마우스 위치가 사이드바 열림 상태에 영향을 주지 않도록 수정
+- Handoff note:
+  - 이후에도 UX가 불안정하면 hover 방식 제거 후 클릭 토글 전용으로 단순화 가능

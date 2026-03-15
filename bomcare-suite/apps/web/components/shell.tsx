@@ -273,12 +273,12 @@ export function Shell({ children, active }: ShellProps) {
   }
 
   return (
-    <div
-      className={`${styles.shell} ${railOpen ? styles.shellExpanded : ""}`}
-      onMouseEnter={() => setRailHover(true)}
-      onMouseLeave={() => setRailHover(false)}
-    >
-      <aside className={styles.sidebar}>
+    <div className={`${styles.shell} ${railOpen ? styles.shellExpanded : ""}`}>
+      <aside
+        className={styles.sidebar}
+        onMouseEnter={() => setRailHover(true)}
+        onMouseLeave={() => setRailHover(false)}
+      >
         <div className={styles.sidebarInner}>
           <div className={styles.topRow}>
             <div className={styles.brandMark}>BC</div>
