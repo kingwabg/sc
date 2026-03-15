@@ -45,36 +45,32 @@ npm run dev
 
 ## Collaboration Rules
 
-Before starting work, always read:
-
-- `bomcare-suite/README.md`
-- `bomcare-suite/AI_CONTEXT.md`
-
-Start with:
+Before starting work, always run:
 
 ```powershell
 git status
 git pull --ff-only origin main
 ```
 
-Record planned files and work status in `bomcare-suite/AI_CONTEXT.md` before editing.
-Update changed files and handoff notes when finished.
+Then read:
+
+- `bomcare-suite/README.md`
+- `bomcare-suite/AI_CONTEXT.md`
+
+Before editing, write a `planned` or `in-progress` entry in `AI_CONTEXT.md` with:
+
+- time
+- task summary
+- target files
+- status
+
+When done, update the same entry with:
+
+- changed files
+- result summary
+- handoff note (if needed)
 
 ## Notes
 
 - Local development defaults to mock-friendly APIs and in-memory configuration.
 - Production planning should move to PostgreSQL, object storage, and externalized secrets.
-
-## AI Collaboration Rules
-
-Before any AI starts coding, run this in the repository:
-
-```powershell
-git pull --ff-only origin main
-git status -sb
-```
-
-Shared files for multi-AI coordination:
-
-- `docs/AI_COLLAB_CONTEXT.md`: current ownership, active tasks, handoff notes
-- `docs/AI_WORKLOG.md`: timestamped work log (append-only)

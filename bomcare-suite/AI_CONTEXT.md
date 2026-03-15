@@ -1,99 +1,78 @@
 # AI_CONTEXT.md
 
-이 프로젝트는 여러 AI/호스트가 동시에 작업할 수 있다.
-작업 충돌을 줄이기 위해 **작업 시작 전 이 파일을 먼저 읽고**, 아래 순서를 반드시 따른다.
+여러 AI가 같은 저장소에서 동시에 작업할 때 쓰는 공통 컨텍스트 파일입니다.
 
----
+## 공통 작업 지시문 (복붙용)
 
-## 작업 시작 전 필수 순서
+작업 시작 전에 아래 순서대로 진행해줘.
 
 1. repo 최신 상태 먼저 반영
-
 ```bash
 git status
 git pull --ff-only origin main
 ```
 
-2. 아래 파일 먼저 읽기
+2. 아래 파일 먼저 읽어
 - `bomcare-suite/README.md`
 - `bomcare-suite/AI_CONTEXT.md`
 
-3. 작업 시작 전에 이 파일에 네 작업 항목 먼저 기록
+3. 작업 시작 전에 `AI_CONTEXT.md`에 네 작업 항목 먼저 기록해
 - 시간
 - 작업 내용
 - 건드릴 파일
-- 상태 (`planned` / `in-progress`)
+- 상태(`planned` / `in-progress`)
 
-4. 작업 끝나면 이 파일 업데이트
+4. 작업 끝나면 `AI_CONTEXT.md` 업데이트해
 - 실제 변경 파일
 - 작업 결과 요약
-- handoff note 있으면 같이 기록
+- handoff note(있으면)
 
----
+주의:
+- 다른 AI가 이미 잡은 파일은 되도록 피해서 작업
+- 충돌 가능하면 먼저 `AI_CONTEXT.md` 기준으로 조정
+- 작업 전에 반드시 최신 pull 하고 시작
 
-## 공통 규칙
+## 짧은 버전 (복붙용)
 
-- 다른 AI가 이미 잡은 파일은 되도록 피해서 작업한다.
-- 충돌 가능하면 먼저 `AI_CONTEXT.md` 기준으로 조정한다.
-- 작업 전에 반드시 최신 pull 하고 시작한다.
-- 작업 단위가 끝나면 **commit + push** 한다.
-- force push 금지.
-- 원격이 앞서 있으면 다시 pull/rebase 후 push 한다.
+- 먼저 `git status && git pull --ff-only origin main`
+- `bomcare-suite/README.md`, `bomcare-suite/AI_CONTEXT.md` 읽기
+- 작업 시작 전에 `AI_CONTEXT.md`에 작업 범위/파일/상태 기록
+- 작업 끝나면 changed files / notes 업데이트
+- 다른 AI가 잡은 파일과 충돌 안 나게 진행
 
----
+## Active Ownership
 
-## 권장 작업 종료 순서
+| Area | Owner | Status | Target Files |
+|---|---|---|---|
+| `apps/api` | unassigned | idle | - |
+| `apps/web` | unassigned | idle | - |
+| `docs` | codex | in-progress | `README.md`, `AI_CONTEXT.md` |
 
-```bash
-git status
-git add <changed-files>
-git commit -m "type: summary"
-git push origin main
-```
-
----
-
-## Active Work Areas
-
-- 로그인 (`apps/web/app/login/*`) — done / pushed
-- 대시보드 (`apps/web/app/dashboard/*`) — done / pushed
-- 사이드바 (`apps/web/components/shell*`) — in progress
-- 문서 AI / 템플릿 계열 — other host 작업 중일 수 있음
-
----
-
-## Avoid Touching Without Recheck
-
-- `apps/web/components/shell*`
-- 문서 AI 관련 API/프롬프트 파일
-- 최근 원격 커밋이 들어온 영역
-
----
-
-## Work Log
-
-아래에 작업 entry를 추가한다.
-
-### Entry Template
+## Entry Template
 
 ```markdown
-- Time:
-- Agent/Host:
+### YYYY-MM-DD HH:mm (KST) - <agent>
 - Status: planned | in-progress | done
 - Task:
 - Target files:
-- Notes / handoff:
+- Changed files:
+- Result:
+- Handoff note:
 ```
 
-### Current Entries
+## Work Log
 
-- Time: 2026-03-16 04:46 KST
-- Agent/Host: OpenClaw main / DESKTOP-PPGTQQM
-- Status: in-progress
-- Task: dashboard sidebar compact usability pass
+### 2026-03-16 04:56 (KST) - codex
+- Status: done
+- Task: multi-AI 공통 규칙 문서화
 - Target files:
-  - `apps/web/components/shell.tsx`
-  - `apps/web/components/shell.module.css`
-- Notes / handoff:
-  - 로그인/대시보드 1차 개편 완료
-  - 여러 호스트가 동시에 `main`에 push 중이므로 작업 전 `git pull --ff-only origin main` 필수
+  - `README.md`
+  - `AI_CONTEXT.md`
+- Changed files:
+  - `README.md`
+  - `AI_CONTEXT.md`
+- Result:
+  - 작업 전 `git pull --ff-only origin main` 규칙 명시
+  - 공통 지시문/짧은 버전/기록 템플릿 정리
+- Handoff note:
+  - 다음 작업자는 시작 전에 Ownership 갱신 후 작업 시작
