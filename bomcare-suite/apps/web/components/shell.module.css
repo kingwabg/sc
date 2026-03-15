@@ -1,0 +1,375 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px;
+  transition: grid-template-columns 0.24s ease;
+}
+
+.shellExpanded {
+  grid-template-columns: 330px minmax(0, 1fr);
+}
+
+.sidebar,
+.main {
+  border: 1px solid rgba(31, 44, 44, 0.08);
+  box-shadow: 0 20px 48px rgba(47, 53, 54, 0.08);
+}
+
+.sidebar {
+  position: sticky;
+  top: 18px;
+  height: calc(100vh - 36px);
+  padding: 14px;
+  border-radius: 30px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(196, 155, 69, 0.16), transparent 25%),
+    linear-gradient(180deg, rgba(255, 251, 246, 0.97), rgba(241, 232, 219, 0.92));
+}
+
+.sidebarInner {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 14px;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.brandMark {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #2f7f7a, #1d5f7f);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  box-shadow: 0 10px 22px rgba(29, 95, 127, 0.2);
+}
+
+.toggle {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(31, 44, 44, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #1f2c2c;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.brandPanel {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(31, 44, 44, 0.08);
+}
+
+.kicker,
+.sectionLabel,
+.userMetaLabel {
+  color: #62706f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brandTitle {
+  margin: 0;
+  color: #1f2c2c;
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.brandText,
+.userMetaText {
+  margin: 0;
+  color: #62706f;
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.summaryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summaryChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(47, 127, 122, 0.1);
+  color: #2f7f7a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.miniNav {
+  display: grid;
+  gap: 8px;
+}
+
+.miniLink {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(31, 44, 44, 0.08);
+  color: #1f2c2c;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.miniLinkActive {
+  background: linear-gradient(135deg, rgba(47, 127, 122, 0.16), rgba(29, 95, 127, 0.12));
+  border-color: rgba(47, 127, 122, 0.22);
+  color: #205f5b;
+}
+
+.navArea {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.navArea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.navArea::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(31, 44, 44, 0.12);
+}
+
+.section {
+  display: grid;
+  gap: 10px;
+}
+
+.section + .section {
+  margin-top: 18px;
+}
+
+.sectionLabel {
+  padding: 0 8px;
+}
+
+.sectionLinks {
+  display: grid;
+  gap: 8px;
+}
+
+.navLink {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(31, 44, 44, 0.08);
+  transform: translateY(-1px);
+}
+
+.navLinkActive {
+  background: linear-gradient(135deg, rgba(47, 127, 122, 0.14), rgba(29, 95, 127, 0.1));
+  border-color: rgba(47, 127, 122, 0.18);
+}
+
+.navIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(31, 44, 44, 0.08);
+  color: #1f2c2c;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.navLinkActive .navIcon {
+  background: rgba(255, 255, 255, 0.92);
+  color: #205f5b;
+}
+
+.navBody {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.navTitle {
+  color: #1f2c2c;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.navDesc {
+  color: #62706f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.userCard {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(31, 44, 44, 0.08);
+}
+
+.userTop {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(47, 127, 122, 0.18), rgba(29, 95, 127, 0.12));
+  color: #205f5b;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.userName {
+  margin: 0;
+  color: #1f2c2c;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.userMeta {
+  display: grid;
+  gap: 4px;
+}
+
+.userMetaText {
+  font-size: 13px;
+}
+
+.userActions {
+  display: grid;
+  gap: 8px;
+}
+
+.primaryGhost,
+.logout {
+  min-height: 44px;
+  border-radius: 16px;
+  border: 1px solid rgba(31, 44, 44, 0.08);
+  background: rgba(255, 255, 255, 0.84);
+  color: #1f2c2c;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primaryGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout {
+  cursor: pointer;
+}
+
+.main {
+  border-radius: 32px;
+  background: rgba(255, 252, 247, 0.64);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.mainInner {
+  min-height: calc(100vh - 36px);
+  padding: 28px;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  .shell,
+  .shellExpanded {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+  }
+
+  .miniNav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .shell,
+  .shellExpanded {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .sidebar,
+  .main {
+    border-radius: 24px;
+  }
+
+  .mainInner {
+    padding: 18px;
+  }
+
+  .miniNav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .navLink {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px;
+  }
+
+  .navIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+}
