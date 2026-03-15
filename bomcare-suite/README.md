@@ -43,6 +43,23 @@ npm install
 npm run dev
 ```
 
+## Collaboration Rules
+
+Before starting work, always read:
+
+- `bomcare-suite/README.md`
+- `bomcare-suite/AI_CONTEXT.md`
+
+Start with:
+
+```powershell
+git status
+git pull --ff-only origin main
+```
+
+Record planned files and work status in `bomcare-suite/AI_CONTEXT.md` before editing.
+Update changed files and handoff notes when finished.
+
 ## Notes
 
 - Local development defaults to mock-friendly APIs and in-memory configuration.
