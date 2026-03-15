@@ -23,6 +23,7 @@ import tools.jackson.databind.ObjectMapper;
 @Service
 public class JournalAiDraftService {
     private static final List<String> DEFAULT_HEADERS = List.of("시간", "구분", "내용", "담당자");
+    private static final List<String> MEETING_HEADERS = List.of("순번", "안건", "논의 내용", "결정 사항", "담당/기한");
 
     private static final String RESPONSE_SCHEMA = """
             {
@@ -56,18 +57,16 @@ public class JournalAiDraftService {
             """;
 
     private static final String SYSTEM_PROMPT = """
-            당신은 아동 사회복지시설 운영일지/회의록을 작성하는 문서 보조 AI입니다.
-            출력은 반드시 한국어 JSON 스키마만 반환하세요.
-            작성 규칙:
-            1) 행정 문체로 간결하게 작성하고 과장 표현을 금지합니다.
-            2) title은 실제 문서 제목 형태로 작성합니다.
-            3) highlights는 3~6개 키워드로 작성합니다.
-            4) sections는 최소 3개 이상 작성합니다.
-               - 권장: 진행 개요, 아동 지원 내용, 특이사항/후속조치
-            5) tableHeaders는 기본 4열(시간, 구분, 내용, 담당자)을 우선 사용합니다.
-            6) tableRows는 최소 3행 이상 작성합니다.
-            7) notes에는 보관/결재/개인정보 주의사항 등 운영 메모를 1~2문장 작성합니다.
-            8) 입력에 없는 인명, 기관명, 수치, 민감정보를 임의 생성하지 않습니다.
+            You are an assistant that drafts Korean operational records for child welfare facilities.
+            Output must be valid JSON that matches the provided schema exactly.
+            Rules:
+            1) Use concise administrative Korean style.
+            2) Do not invent names, organizations, numbers, or sensitive facts not in input.
+            3) title must look like an actual official document title.
+            4) highlights must be 3-6 short keywords.
+            5) sections must have at least 3 items.
+            6) tableRows must have at least 3 rows.
+            7) notes should include review/approval/privacy reminders in 1-2 sentences.
             """;
 
     private final ObjectMapper objectMapper;
@@ -152,6 +151,7 @@ public class JournalAiDraftService {
     }
 
     private String buildUserPrompt(JournalAiDraftRequest request) throws IOException {
+        boolean meeting = isMeetingRecord(request.recordType());
         Map<String, Object> context = new LinkedHashMap<>();
         context.put("author", request.author());
         context.put("facilityName", request.facilityName());
@@ -164,8 +164,11 @@ public class JournalAiDraftService {
         context.put("tags", blankToDefault(request.tags(), "일상"));
         context.put("prompt", request.prompt());
         context.put("currentBody", blankToDefault(request.currentBody(), "(본문 없음)"));
+        context.put("templateType", meeting ? "meeting_minutes" : "daily_journal");
+        context.put("templateRules", meeting ? meetingTemplateRules() : dailyTemplateRules());
+        context.put("preferredTableHeaders", meeting ? MEETING_HEADERS : DEFAULT_HEADERS);
 
-        return "아래 입력값을 기반으로 운영 문서를 작성하세요.\n" + objectMapper.writeValueAsString(context);
+        return "Generate the document draft based on this context JSON.\n" + objectMapper.writeValueAsString(context);
     }
 
     private String extractOutputText(JsonNode root) {
@@ -202,9 +205,7 @@ public class JournalAiDraftService {
     }
 
     private JournalAiDraftResponse fallbackResponse(JournalAiDraftRequest request) {
-        String safeTitle = StringUtils.hasText(request.programName())
-                ? request.programName().trim() + " 운영일지"
-                : "아동 운영일지";
+        String safeTitle = defaultTitle(request);
 
         JournalHwpRequest draft = new JournalHwpRequest(
                 safeTitle,
@@ -247,8 +248,8 @@ public class JournalAiDraftService {
     }
 
     private JournalHwpRequest normalizeJournalRequest(JournalAiDraftRequest request, DraftPayload payload) {
-        List<JournalHwpRequest.JournalSection> sections = normalizeSections(payload.sections());
-        List<String> headers = normalizeHeaders(payload.tableHeaders());
+        List<JournalHwpRequest.JournalSection> sections = normalizeSections(payload.sections(), request.recordType());
+        List<String> headers = normalizeHeaders(payload.tableHeaders(), request.recordType());
         List<List<String>> rows = normalizeRows(payload.tableRows(), headers, request.author());
         List<String> highlights = normalizeHighlights(payload.highlights());
         String title = blankToDefault(payload.title(), defaultTitle(request));
@@ -279,7 +280,7 @@ public class JournalAiDraftService {
         return items.isEmpty() ? List.of("운영일지", "아동지원", "일상기록") : items;
     }
 
-    private List<JournalHwpRequest.JournalSection> normalizeSections(List<DraftSection> sections) {
+    private List<JournalHwpRequest.JournalSection> normalizeSections(List<DraftSection> sections, String recordType) {
         List<JournalHwpRequest.JournalSection> mapped = sections == null ? List.of() : sections.stream()
                 .map(section -> new JournalHwpRequest.JournalSection(
                         blankToDefault(section.heading(), "기록 내용"),
@@ -292,6 +293,14 @@ public class JournalAiDraftService {
             return mapped;
         }
 
+        if (isMeetingRecord(recordType)) {
+            return List.of(
+                    new JournalHwpRequest.JournalSection("회의 개요", "회의 일시, 참석 범위, 목적을 요약합니다."),
+                    new JournalHwpRequest.JournalSection("안건별 논의 내용", "안건별 핵심 논의 사항과 주요 의견을 정리합니다."),
+                    new JournalHwpRequest.JournalSection("결정 사항 및 후속 조치", "담당자와 기한을 포함해 실행 계획을 기록합니다.")
+            );
+        }
+
         return List.of(
                 new JournalHwpRequest.JournalSection("진행 개요", "당일 운영 흐름과 주요 활동을 요약합니다."),
                 new JournalHwpRequest.JournalSection("아동 지원 내용", "참여, 관찰, 상담 및 보호 조치를 기록합니다."),
@@ -299,14 +308,17 @@ public class JournalAiDraftService {
         );
     }
 
-    private List<String> normalizeHeaders(List<String> headers) {
+    private List<String> normalizeHeaders(List<String> headers, String recordType) {
         List<String> normalized = headers == null ? List.of() : headers.stream()
                 .map(this::trimToNull)
                 .filter(StringUtils::hasText)
-                .limit(4)
+                .limit(6)
                 .toList();
 
-        return normalized.size() >= 3 ? normalized : DEFAULT_HEADERS;
+        if (normalized.size() >= 3) {
+            return normalized;
+        }
+        return isMeetingRecord(recordType) ? MEETING_HEADERS : DEFAULT_HEADERS;
     }
 
     private List<List<String>> normalizeRows(List<List<String>> rows, List<String> headers, String author) {
@@ -319,6 +331,14 @@ public class JournalAiDraftService {
 
         if (normalized.size() >= 3) {
             return normalized;
+        }
+
+        if (width >= 5) {
+            return List.of(
+                    normalizeRow(List.of("1", "이전 회의 조치 점검", "완료/미완료 항목을 점검했습니다.", "미완료 항목 보완", blankToDefault(author, "담당자")), width),
+                    normalizeRow(List.of("2", "아동 사례 공유", "고위험 신호 및 지원 현황을 공유했습니다.", "개별 상담 연계", blankToDefault(author, "담당자")), width),
+                    normalizeRow(List.of("3", "다음 주 일정", "프로그램 운영 일정을 조정했습니다.", "일정 공지 및 준비", blankToDefault(author, "담당자")), width)
+            );
         }
 
         return List.of(
@@ -351,7 +371,25 @@ public class JournalAiDraftService {
 
     private String defaultTitle(JournalAiDraftRequest request) {
         String program = trimToNull(request.programName());
+        if (isMeetingRecord(request.recordType())) {
+            return StringUtils.hasText(program) ? program + " 회의록" : "아동 지원 회의록";
+        }
         return StringUtils.hasText(program) ? program + " 운영일지" : "아동 운영일지";
+    }
+
+    private boolean isMeetingRecord(String recordType) {
+        String value = trimToNull(recordType);
+        return StringUtils.hasText(value) && value.contains("회의");
+    }
+
+    private String dailyTemplateRules() {
+        return "Sections should focus on operation flow, child support content, and special notes. "
+                + "Prefer time-based rows in the table.";
+    }
+
+    private String meetingTemplateRules() {
+        return "Sections should focus on meeting overview, agenda discussions, and decisions/actions. "
+                + "Table should emphasize agenda items, decisions, and owner/deadline.";
     }
 
     private String blankToDefault(String value, String defaultValue) {
