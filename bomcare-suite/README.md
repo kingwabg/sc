@@ -64,3 +64,17 @@ Update changed files and handoff notes when finished.
 
 - Local development defaults to mock-friendly APIs and in-memory configuration.
 - Production planning should move to PostgreSQL, object storage, and externalized secrets.
+
+## AI Collaboration Rules
+
+Before any AI starts coding, run this in the repository:
+
+```powershell
+git pull --ff-only origin main
+git status -sb
+```
+
+Shared files for multi-AI coordination:
+
+- `docs/AI_COLLAB_CONTEXT.md`: current ownership, active tasks, handoff notes
+- `docs/AI_WORKLOG.md`: timestamped work log (append-only)
