@@ -47,6 +47,7 @@ git pull --ff-only origin main
 | `apps/api` | unassigned | idle | - |
 | `apps/web` | unassigned | idle | - |
 | `docs` | codex | in-progress | `README.md`, `AI_CONTEXT.md` |
+| `apps/web/components` | OpenClaw main | in-progress | `shell.module.css` |
 
 ## Entry Template
 
@@ -76,3 +77,17 @@ git pull --ff-only origin main
   - 공통 지시문/짧은 버전/기록 템플릿 정리
 - Handoff note:
   - 다음 작업자는 시작 전에 Ownership 갱신 후 작업 시작
+
+### 2026-03-16 04:48 (KST) - OpenClaw main / DESKTOP-PPGTQQM
+- Status: done
+- Task: dashboard sidebar compact usability pass
+- Target files:
+  - `apps/web/components/shell.module.css`
+- Changed files:
+  - `apps/web/components/shell.module.css`
+- Result:
+  - 사이드바 폭/브랜드 영역/섹션 간격/유저 카드 높이 추가 압축 완료
+  - 메뉴 설명 숨김 유지, 좁은 화면에서 브랜드 영역 숨김 처리
+  - `npm run build` 통과
+- Handoff note:
+  - 토글 UX는 hover/pin 혼합 구조라 추가 단순화 필요
