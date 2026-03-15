@@ -295,10 +295,7 @@ export function Shell({ children, active }: ShellProps) {
           {railOpen ? (
             <section className={styles.brandPanel}>
               <span className={styles.kicker}>Bomcare Suite</span>
-              <h1 className={styles.brandTitle}>새봄 아동복지 운영센터</h1>
-              <p className={styles.brandText}>
-                사례관리, 생활지원, 문서, 보고 흐름을 한곳에서 정리하는 현대형 운영 플랫폼입니다.
-              </p>
+              <h1 className={styles.brandTitle}>새봄 운영센터</h1>
               <div className={styles.summaryRow}>
                 <span className={styles.summaryChip}>{session.role}</span>
                 <span className={styles.summaryChip}>{getDepartmentName(session.departmentId)}</span>
@@ -358,19 +355,19 @@ export function Shell({ children, active }: ShellProps) {
                 <div className={styles.avatar}>{session.name.slice(0, 1)}</div>
                 <div className={styles.userMeta}>
                   <p className={styles.userName}>{session.name}</p>
-                  <span className={styles.userMetaText}>{getPositionName(session.positionId)}</span>
+                  <span className={styles.userMetaText}>
+                    {getDepartmentName(session.departmentId)} · {getPositionName(session.positionId)}
+                  </span>
                 </div>
               </div>
 
-              <div className={styles.userMeta}>
-                <span className={styles.userMetaLabel}>Department</span>
-                <p className={styles.userMetaText}>{getDepartmentName(session.departmentId)}</p>
-                <span className={styles.userMetaLabel}>Role</span>
-                <p className={styles.userMetaText}>{session.role}</p>
+              <div className={styles.summaryRow}>
+                <span className={styles.summaryChip}>{session.role}</span>
+                <span className={styles.summaryChip}>계정 관리</span>
               </div>
 
               <div className={styles.userActions}>
-                <Link href="/identity" className={styles.primaryGhost}>계정·조직도 열기</Link>
+                <Link href="/identity" className={styles.primaryGhost}>계정</Link>
                 <button className={styles.logout} type="button" onClick={logout}>로그아웃</button>
               </div>
             </section>
