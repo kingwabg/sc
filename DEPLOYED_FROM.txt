@@ -1,4 +1,4 @@
 HOP Web deploy
 source=C:\Users\juna.DESKTOP-PPGTQQM\Documents\Playground\hop\apps\studio-host\dist
 updated=2026-04-26
-notes=table range structure editing plus row, column, and all-cell selection commands
+notes=table range structure editing, row/column/all-cell selection, and ctrl single-cell border resizing
