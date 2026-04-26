@@ -1,4 +1,4 @@
 HOP Web deploy
 source=C:\Users\juna.DESKTOP-PPGTQQM\Documents\Playground\hop\apps\studio-host\dist
 updated=2026-04-26
-notes=table diagonal border save path + rebuilt rhwp wasm core
+notes=table range structure editing plus row, column, and all-cell selection commands
