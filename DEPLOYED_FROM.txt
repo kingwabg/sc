@@ -1,3 +1,1 @@
-HOP web build for Seochang Apps Script
-Built at: 2026-04-26 22:38:54 +09:00
-Source: hop/apps/studio-host/dist
+HOP web deploy from local build at 2026-04-26T22:52:33.0563373+09:00
