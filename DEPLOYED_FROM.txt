@@ -1,4 +1,4 @@
 HOP Web deploy
 source=C:\Users\juna.DESKTOP-PPGTQQM\Documents\Playground\hop\apps\studio-host\dist
 updated=2026-04-26
-notes=fix table selection menu enabled state and reliable ctrl border resize hit testing
+notes=fix table object all-cell selection and widen ctrl border resize hit testing
