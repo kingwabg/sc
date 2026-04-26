@@ -1,1 +1,4 @@
-HOP web deploy from local build at 2026-04-26T23:07:11+09:00
+HOP Web deploy
+source=C:\Users\juna.DESKTOP-PPGTQQM\Documents\Playground\hop\apps\studio-host\dist
+updated=2026-04-26
+notes=table diagonal border save path + rebuilt rhwp wasm core
