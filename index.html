@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="./favicon.ico" />
-  <title>HOP</title>
-  <script type="module" crossorigin src="./assets/index-DG67pQkZ.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-rb9zBv1j.css">
-</head>
+  <meta name="theme-color" content="#2b6cb0" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/icons/icon-256.png" />
+  <title>rhwp-studio</title>
+  <script type="module" crossorigin src="/assets/index-DE2KI2pI.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Di8-R0fz.css">
+<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
 <body>
   <div id="studio-root">
     <!-- 메뉴바 -->
@@ -17,29 +19,13 @@
         <span class="menu-title">파일</span>
         <div class="menu-dropdown">
           <div class="md-item disabled" data-cmd="file:new-doc"><span class="md-icon icon-new-doc"></span><span class="md-label">새로 만들기</span></div>
-          <div class="md-item" data-cmd="file:new-window"><span class="md-icon"></span><span class="md-label">새 창</span><span class="md-shortcut">Ctrl+Shift+N</span></div>
-          <div class="md-item" data-cmd="file:open"><span class="md-icon"></span><span class="md-label">열기</span><span class="md-shortcut">Ctrl+O</span></div>
+          <div class="md-item" data-cmd="file:open"><span class="md-icon"></span><span class="md-label">열기</span></div>
           <div class="md-item disabled" data-cmd="file:save"><span class="md-icon icon-save"></span><span class="md-label">저장</span><span class="md-shortcut">Ctrl+S</span></div>
-          <div class="md-item disabled" data-cmd="file:save-as"><span class="md-icon"></span><span class="md-label">다른 이름으로 저장</span><span class="md-shortcut">Ctrl+Shift+S</span></div>
           <div class="md-sep"></div>
-          <div class="md-item disabled" data-cmd="file:export-pdf"><span class="md-icon"></span><span class="md-label">PDF 내보내기</span><span class="md-shortcut">Ctrl+E</span></div>
           <div class="md-item disabled" data-cmd="file:page-setup"><span class="md-icon icon-page-setup"></span><span class="md-label">편집 용지</span><span class="md-shortcut">F7</span></div>
           <div class="md-item disabled" data-cmd="file:print"><span class="md-icon icon-print"></span><span class="md-label">인쇄</span><span class="md-shortcut">Ctrl+P</span></div>
           <div class="md-sep"></div>
           <div class="md-item" data-cmd="file:about"><span class="md-icon icon-help"></span><span class="md-label">제품 정보</span></div>
-        </div>
-      </div>
-      <!-- ── 운영일지 ── -->
-      <div class="menu-item" data-menu="daily-log">
-        <span class="menu-title">운영일지</span>
-        <div class="menu-dropdown">
-          <div class="md-item" data-cmd="daily-log:save-template"><span class="md-icon"></span><span class="md-label">현재 문서를 템플릿으로 저장</span></div>
-          <div class="md-item" data-cmd="daily-log:open-template"><span class="md-icon"></span><span class="md-label">저장된 템플릿 열기</span></div>
-          <div class="md-sep"></div>
-          <div class="md-item" data-cmd="daily-log:import-template"><span class="md-icon"></span><span class="md-label">템플릿 파일 가져오기</span></div>
-          <div class="md-item" data-cmd="daily-log:download-template"><span class="md-icon"></span><span class="md-label">저장된 템플릿 파일 받기</span></div>
-          <div class="md-sep"></div>
-          <div class="md-item" data-cmd="daily-log:delete-template"><span class="md-icon"></span><span class="md-label">저장된 템플릿 삭제</span></div>
         </div>
       </div>
       <!-- ── 편집 ── -->
@@ -368,10 +354,6 @@
           <div class="md-item disabled" data-cmd="table:delete-row"><span class="md-icon"></span><span class="md-label">줄 지우기</span></div>
           <div class="md-item disabled" data-cmd="table:delete-col"><span class="md-icon"></span><span class="md-label">칸 지우기</span><span class="md-shortcut">Alt+Delete</span></div>
           <div class="md-sep"></div>
-          <div class="md-item disabled" data-cmd="table:cell-selection-enter"><span class="md-icon"></span><span class="md-label">셀 블록 선택</span><span class="md-shortcut">Ctrl+Alt+T</span></div>
-          <div class="md-item" data-cmd="table:select-row"><span class="md-icon"></span><span class="md-label">현재 줄 전체 선택</span></div>
-          <div class="md-item" data-cmd="table:select-col"><span class="md-icon"></span><span class="md-label">현재 칸 전체 선택</span></div>
-          <div class="md-item" data-cmd="table:select-all-cells"><span class="md-icon"></span><span class="md-label">표 전체 셀 선택</span></div>
           <div class="md-item disabled" data-cmd="table:cell-split"><span class="md-icon"></span><span class="md-label">셀 나누기</span><span class="md-shortcut">S</span></div>
           <div class="md-item disabled" data-cmd="table:cell-merge"><span class="md-icon"></span><span class="md-label">셀 합치기</span><span class="md-shortcut">M</span></div>
           <div class="md-item disabled" data-cmd="table:cell-height-equal"><span class="md-icon"></span><span class="md-label">셀 높이를 같게</span><span class="md-shortcut">H</span></div>
@@ -600,6 +582,6 @@
         <button id="sb-zoom-in" class="stb-icon-btn" title="확대"><span class="tb-sprite icon-zoom-in"></span></button>
       </span>
     </div>
-  </div>
+  </div>
 </body>
 </html>

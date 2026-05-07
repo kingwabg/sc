@@ -1,4 +1,4 @@
 HOP Web deploy
-source=C:\Users\juna.DESKTOP-PPGTQQM\Documents\Playground\hop\apps\studio-host\dist
-updated=2026-04-26
-notes=fix table object all-cell selection and widen ctrl border resize hit testing
+source=C:\Users\junha\Downloads\rhwp-main\rhwp-main\rhwp-studio\dist
+updated=2026-05-07
+notes=fix table border click tolerance (5→8px), implement table handle resize via 8 drag handles
