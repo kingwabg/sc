@@ -1,4 +1,4 @@
 HOP Web deploy
 source=C:\Users\junha\Downloads\rhwp-main\rhwp-main\rhwp-studio\dist
 updated=2026-05-07
-notes=fix table border click tolerance (5→8px), implement table handle resize via 8 drag handles
+notes=fix table:cell-props to work in table object selection mode (canExecute + execute branch)
