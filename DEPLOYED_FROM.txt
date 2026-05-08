@@ -1,4 +1,4 @@
-HOP Web deploy
+﻿HOP Web deploy
 source=C:\Users\junha\Downloads\rhwp-main\rhwp-main\rhwp-studio\dist
-updated=2026-05-07
-notes=fix base=/sc/ so CSS/JS load correctly on GitHub Pages subpath
+updated=2026-05-08
+notes=fix table movement: guard ppi/ci update when WASM returns only {ok:true}
