@@ -773,6 +773,54 @@ export default function HwpWriterPage() {
     syncEditorHtml();
   };
 
+  const moveTableUp = () => {
+    const table = selectedTableRef.current;
+    if (!table) return;
+    const prev = table.previousElementSibling;
+    if (!prev) return;
+    table.parentNode?.insertBefore(table, prev);
+    syncEditorHtml();
+  };
+
+  const moveTableDown = () => {
+    const table = selectedTableRef.current;
+    if (!table) return;
+    const next = table.nextElementSibling;
+    if (!next) return;
+    next.parentNode?.insertBefore(table, next.nextSibling);
+    syncEditorHtml();
+  };
+
+  const moveRowUp = () => {
+    const table = selectedTableRef.current;
+    const selectedRowIndexes = getSelectedRowIndexes();
+    if (!table || selectedRowIndexes.length === 0) return;
+    const firstRowIndex = selectedRowIndexes[0];
+    if (firstRowIndex === 0) return;
+    const targetRow = table.rows[firstRowIndex];
+    const prevRow = table.rows[firstRowIndex - 1];
+    if (!targetRow || !prevRow) return;
+    targetRow.parentNode?.insertBefore(targetRow, prevRow);
+    const cellIndex = selectedCellRef.current?.cellIndex ?? 0;
+    setTableSelection(table.rows[firstRowIndex - 1]?.cells[cellIndex] ?? null);
+    syncEditorHtml();
+  };
+
+  const moveRowDown = () => {
+    const table = selectedTableRef.current;
+    const selectedRowIndexes = getSelectedRowIndexes();
+    if (!table || selectedRowIndexes.length === 0) return;
+    const lastRowIndex = selectedRowIndexes[selectedRowIndexes.length - 1];
+    if (lastRowIndex >= table.rows.length - 1) return;
+    const targetRow = table.rows[lastRowIndex];
+    const nextRow = table.rows[lastRowIndex + 1];
+    if (!targetRow || !nextRow) return;
+    nextRow.parentNode?.insertBefore(table.rows[lastRowIndex + 1], targetRow);
+    const cellIndex = selectedCellRef.current?.cellIndex ?? 0;
+    setTableSelection(table.rows[lastRowIndex + 1]?.cells[cellIndex] ?? null);
+    syncEditorHtml();
+  };
+
   const toggleHeaderRow = () => {
     const rows = [
       ...new Set(
@@ -1666,6 +1714,14 @@ export default function HwpWriterPage() {
             <button type="button" onClick={() => runTableAction(() => setSelectedCellBackground(""))}>배경 지우기</button>
             <button type="button" onClick={() => runTableAction(() => setSelectedCellBackground("#fff7c2"))}>배경 노랑</button>
             <button type="button" onClick={() => runTableAction(() => setSelectedCellBackground("#dff4ef"))}>배경 민트</button>
+          </div>
+
+          <div className="hwp-context-section">
+            <strong>이동</strong>
+            <button type="button" onClick={() => runTableAction(moveRowUp)}>행 위로 이동</button>
+            <button type="button" onClick={() => runTableAction(moveRowDown)}>행 아래로 이동</button>
+            <button type="button" onClick={() => runTableAction(moveTableUp)}>표 위로 이동</button>
+            <button type="button" onClick={() => runTableAction(moveTableDown)}>표 아래로 이동</button>
           </div>
 
           <div className="hwp-context-section">
